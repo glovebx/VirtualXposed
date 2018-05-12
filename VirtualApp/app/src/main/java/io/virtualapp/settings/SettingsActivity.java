@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.support.v7.app.AlertDialog;
 import android.view.ViewGroup;
@@ -18,8 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.launcher3.LauncherFiles;
-import com.lody.virtual.GmsSupport;
 import com.lody.virtual.client.core.VirtualCore;
+import com.lody.virtual.client.env.Constants;
 import com.lody.virtual.helper.utils.FileUtils;
 
 import java.io.File;
@@ -35,6 +36,7 @@ import moe.feng.alipay.zerosdk.AlipayZeroSdk;
  */
 public class SettingsActivity extends Activity {
 
+    private static final String ADVANCE_SETTINGS_KEY = "settings_advance";
     private static final String ADD_APP_KEY = "settings_add_app";
     private static final String APP_MANAGE_KEY = "settings_app_manage";
     private static final String TASK_MANAGE_KEY = "settings_task_manage";
@@ -50,6 +52,7 @@ public class SettingsActivity extends Activity {
     private static final String COPY_FILE = "advance_settings_copy_file";
     private static final String YIELD_MODE = "advance_settings_yield_mode2";
     private static final String RECOMMEND_PLUGIN = "settings_plugin_recommend";
+    private static final String DISABLE_RESIDENT_NOTIFICATION = "advance_settings_disable_resident_notification";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +92,8 @@ public class SettingsActivity extends Activity {
             Preference copyFile = findPreference(COPY_FILE);
 
             SwitchPreference disableInstaller = (SwitchPreference) findPreference(DISABLE_INSTALLER_KEY);
-            SwitchPreference installGms = (SwitchPreference) findPreference(INSTALL_GMS_KEY);
             SwitchPreference yieldMode = (SwitchPreference) findPreference(YIELD_MODE);
+            SwitchPreference disableResidentNotification = (SwitchPreference) findPreference(DISABLE_RESIDENT_NOTIFICATION);
 
             addApp.setOnPreferenceClickListener(preference -> {
                 ListAppActivity.gotoListApp(getActivity());
@@ -188,6 +191,8 @@ public class SettingsActivity extends Activity {
                 }
             });
 
+            /*
+            SwitchPreference installGms = (SwitchPreference) findPreference(INSTALL_GMS_KEY);
             installGms.setOnPreferenceChangeListener(((preference, newValue) -> {
                 if (!(newValue instanceof Boolean)) {
                     return false;
@@ -206,7 +211,7 @@ public class SettingsActivity extends Activity {
                     // TODO, delete.
                 }
                 return false;
-            }));
+            }));*/
 
             copyFile.setOnPreferenceClickListener((preference -> {
                 Context context = getActivity();
@@ -291,6 +296,35 @@ public class SettingsActivity extends Activity {
                     return !yieldFile.exists() || yieldFile.delete();
                 }
             });
+
+            disableResidentNotification.setOnPreferenceChangeListener(((preference, newValue) -> {
+
+                if (!(newValue instanceof Boolean)) {
+                    return false;
+                }
+
+                boolean on = (boolean) newValue;
+
+                File flag = getActivity().getFileStreamPath(Constants.NO_NOTIFICATION_FLAG);
+                if (on) {
+                    boolean success;
+                    try {
+                        success = flag.createNewFile();
+                    } catch (IOException e) {
+                        success = false;
+                    }
+                    return success;
+                } else {
+                    return !flag.exists() || flag.delete();
+                }
+            }));
+
+            if (android.os.Build.VERSION.SDK_INT < 25) {
+                // Android NR1 below do not need this.
+                PreferenceScreen advance = (PreferenceScreen) findPreference(ADVANCE_SETTINGS_KEY);
+                advance.removePreference(disableResidentNotification);
+            }
+
         }
 
         private static void dismiss(ProgressDialog dialog) {
