@@ -9,6 +9,7 @@ import com.lody.virtual.client.env.VirtualRuntime;
 import com.lody.virtual.client.ipc.VActivityManager;
 import com.lody.virtual.client.natives.NativeMethods;
 import com.lody.virtual.helper.compat.BuildCompat;
+import com.lody.virtual.helper.utils.DeviceUtil;
 import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.remote.InstalledAppInfo;
@@ -126,7 +127,7 @@ public class NativeEngine {
         try {
             String soPath = String.format("/data/data/%s/lib/libva++.so", VirtualCore.get().getHostPkg());
             if (!new File(soPath).exists()) {
-                throw new RuntimeException("Unable to find the so.");
+                throw new RuntimeException("io redirect failed.");
             }
             nativeEnableIORedirect(soPath, Build.VERSION.SDK_INT, BuildCompat.getPreviewSDKInt());
         } catch (Throwable e) {
@@ -166,7 +167,7 @@ public class NativeEngine {
         if (vuid != -1) {
             return VUserHandle.getAppId(vuid);
         }
-        VLog.d(TAG, "Unknown uid: " + callingPid);
+        VLog.w(TAG, String.format("Unknown uid: %s", callingPid));
         return VClientImpl.get().getBaseVUid();
     }
 
@@ -177,7 +178,7 @@ public class NativeEngine {
         try {
             String canonical = new File(dexOrJarPath).getCanonicalPath();
             InstalledAppInfo info = sDexOverrideMap.get(canonical);
-            if (info != null && !info.dependSystem) {
+            if (info != null && !info.dependSystem || info != null && DeviceUtil.isMeizuBelowN() && params[1] == null) {
                 outputPath = info.getOdexFile().getPath();
                 params[1] = outputPath;
             }
@@ -202,6 +203,8 @@ public class NativeEngine {
     private static native void nativeIOForbid(String path);
 
     private static native void nativeEnableIORedirect(String selfSoPath, int apiLevel, int previewApiLevel);
+
+    public static native void disableJit(int apiLevel);
 
     public static int onGetUid(int uid) {
         return VClientImpl.get().getBaseVUid();
