@@ -331,13 +331,19 @@ public final class VClientImpl extends IVClient.Stub {
             InvocationStubManager.getInstance().checkEnv(AppInstrumentation.class);
         }
 
-        ClassLoader originClassLoader = context.getClassLoader();
-        initForYieldMode();
-        ExposedBridge.initOnce(context, data.appInfo, originClassLoader);
-        List<InstalledAppInfo> modules = VirtualCore.get().getInstalledApps(0);
-        for (InstalledAppInfo module : modules) {
-            ExposedBridge.loadModule(module.apkPath, module.getOdexFile().getParent(), module.libPath,
-                    data.appInfo, originClassLoader);
+        boolean enableXposed = !VirtualCore.get().getContext().getFileStreamPath(".disable_xposed").exists();
+        if (enableXposed) {
+            VLog.i(TAG, "Xposed is enabled.");
+            ClassLoader originClassLoader = context.getClassLoader();
+            initForYieldMode();
+            ExposedBridge.initOnce(context, data.appInfo, originClassLoader);
+            List<InstalledAppInfo> modules = VirtualCore.get().getInstalledApps(0);
+            for (InstalledAppInfo module : modules) {
+                ExposedBridge.loadModule(module.apkPath, module.getOdexFile().getParent(), module.libPath,
+                        data.appInfo, originClassLoader);
+            }
+        } else {
+            VLog.w(TAG, "Xposed is disable..");
         }
 
         mInitialApplication = LoadedApk.makeApplication.call(data.info, false, null);
@@ -425,6 +431,9 @@ public final class VClientImpl extends IVClient.Stub {
                 groups.add(newRoot);
                 mirror.java.lang.ThreadGroup.groups.set(root, groups);
                 for (ThreadGroup group : newGroups) {
+                    if (group == newRoot) {
+                        continue;
+                    }
                     mirror.java.lang.ThreadGroup.parent.set(group, newRoot);
                 }
             }
@@ -436,6 +445,9 @@ public final class VClientImpl extends IVClient.Stub {
                 ThreadGroupN.groups.set(newRoot, newGroups);
                 ThreadGroupN.groups.set(root, new ThreadGroup[]{newRoot});
                 for (Object group : newGroups) {
+                    if (group == newRoot) {
+                        continue;
+                    }
                     ThreadGroupN.parent.set(group, newRoot);
                 }
                 ThreadGroupN.ngroups.set(root, 1);

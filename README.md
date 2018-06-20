@@ -4,50 +4,55 @@
 
 Introduction
 ------------
-**VirtualXposed** is a simple APP based on [VirtualApp](https://github.com/asLody/VirtualApp) and [epic](https://github.com/tiann/epic) that lets you use the Xposed Module without needing to root, unlock the bootloader, or flash a system image. (Support Android 5.0~8.1)
+**VirtualXposed** is a simple APP based on [VirtualApp](https://github.com/asLody/VirtualApp) and [epic](https://github.com/tiann/epic) that allows you to use an Xposed Module without needing to root, unlock the bootloader, or flash a custom system image. (Supports Android 5.0~8.1) 
+
+The only two restriction of VirtualXposed are:
+
+1. Unable to modify system, so any Module which modifies system won't be able to work properly.
+2. Currently resource hooks are not supported. (Theming modules use Resource Hooks).
 
 Warning
 -----------
 
-No use for Commercial Purposes!!!  Please refer to VirtualApp's [declaration](https://github.com/asLody/VirtualApp).
+Usage for Commercial Purposes are not allowed!!!  Please refer to VirtualApp's [declaration](https://github.com/asLody/VirtualApp).
 
 Usage
 -------
 
 ### Preparation
 
-Download the latest apk from the [release page](https://github.com/android-hacker/VirtualXposed/releases), and install it on your Android device.
+Download the latest APK from the [release page](https://github.com/android-hacker/VirtualXposed/releases), and install it on your Android device.
 
-### Install APP and Xposed module
+### Install APP and Xposed Module
 
-Open VirtualXposed, Click the ➕ in home page, add the APP and Xposed module to VirtualXposed's virtual environment.
+Open VirtualXposed, Click on the **Drawer Button** at the bottom of home page(Or long click the screen), add your desired APP and Xposed Module to VirtualXposed's virtual environment.
 
-Notice: **All operations（installing Xposed module, APP）must be done in VirtualXposed**, otherwise the Xposed module won't take effect. For example, if you install the YouTube app on your system (Your phone's original system, not in VirtualXposed), and then install YouTube AdAway (A YouTube Xposed module) in VirtualXposed; or you install YouTube in VirtualXposed, and install YouTube AdAway on original system; or both of them are installed on original system, **yhese three cases won't take effect!**
+Note: **All operations（installation of Xposed Module, APP）must be done in VirtualXposed**, otherwise the Xposed Module installed won't take effect. For example, if you install the YouTube app on your system (Your phone's original system, not in VirtualXposed), and then install YouTube AdAway (A YouTube Xposed Module) in VirtualXposed; or you install YouTube in VirtualXposed, and install YouTube AdAway on original system; or both of them are installed on original system, **neither of these three cases will work!**
 
 ![How to install](https://raw.githubusercontent.com/tiann/arts/master/vxp_install.gif)
 
-There are three ways to install an app or Xposed module to VirtualXposed:
+There are three ways to install an APP or Xposed Module to VirtualXposed:
 
-1. Clone the original system's installed apps. Click Button at bottom of home page, then click Add App, the first page are installed apps.
-2. Install via an APK file. (Click Button at bottom of home page, then click Add App, the second page are apks found in your sdcard)
-3. Install via the external file chooser. (Click Button at bottom of home page home page, then click App App, use the float button to choose apk file to install)
+1. **Clone an installed app from your original system.** (Click Button at bottom of home page, then click Add App, the first page shows a list of installed apps.)
+2. **Install via an APK file.** (Click Button at bottom of home page, then click Add App, the second page shows APKs found in your sdcard)
+3. **Install via an external file chooser.** (Click Button at bottom of home page, then click Add App, use the floating action button to choose an APK file to install)
 
-For Xposed module, You can install it from XposedInstaller, too.
+For Xposed Module, You can install it from Xposed Installer, too.
 
-### Activate the Xposed module
+### Activate the Xposed Module
 
-Open XposedInstaller in VirtualXposed, go to the module fragment, check the module you want to use:
+Open Xposed Installer in VirtualXposed, go to the module fragment, check the module you want to use:
 
-![How to activate module](https://raw.githubusercontent.com/tiann/arts/master/vxp_active.gif)
+![How to activate module](https://raw.githubusercontent.com/tiann/arts/master/vxp_activate.gif)
 
 ### Reboot
 
-Reboot the VirtualXposed, **No need to reboot your phone**; Just click Settings in home page of VirtualXposed, click `Reboot` button, and VirtualXposed will reboot like a shot. 
+You only need to reboot VirtualXposed, **There's no need to reboot your phone**; Just click Settings in home page of VirtualXposed, click `Reboot` button, and VirtualXposed will reboot in a blink. 
 
 ![How to reboot](https://raw.githubusercontent.com/tiann/arts/master/vxp_reboot.gif)
 
-Supported Modules
---------------------
+Modules tested by myself
+-------------------------
 
 - [微X模块][wx]: 微信模块，功能全面；但与VXP兼容性一般。
 - [微信巫师][wxws]: 微信模块，项目开源，代码优秀。
@@ -67,45 +72,37 @@ Supported Modules
 - [微信斗图神器][wxdtsq]: 斗图神器，微信用的。
 - [大圣净化][dsjh]: 去广告神器，推荐使用。
 
-Far more than above.
+Supported modules are far more than above, you should test it by yourself, and welcome to send me a PR for the list above.
 
 Others
 -------
 
 ### GameGuardian
 
-VirtualXposed also supports GameGuardian, **use version 0.9.1 for best compatibility**.(You can download it in release page).
+VirtualXposed also supports GameGuardian, **you should use the separate version for GameGuardian**.(Download it in release page).
 
 [Video Tutorial](https://gameguardian.net/forum/gallery/image/437-no-root-via-virtualxposed-without-error-105-gameguardian/)
 
 ### VirusTotal
 
-VirusTotal may say VirtualXposed has malware, it is stupid, you can refer to my [explanation](https://github.com/android-hacker/VirtualXposed/issues/10).
+VirusTotal might report VirtualXposed as a malware, it is stupid, you can refer to my [explanation](https://github.com/android-hacker/VirtualXposed/issues/10).
 
-And VirtualXposed is obviously open source, so you can refer to the source code. I am sure it is safe.
+And obviously, VirtualXposed is open source, so you can refer to the source code. I am sure that it is safe to use.
 
-If you still do not believe me, you can install version [0.8.7](https://github.com/android-hacker/VirtualXposed/releases/tag/0.8.7); VirusTotal says this version is safe.
-
-
-Known Issues
--------------
-
-1. Cannot modify system, so the Module used to modify system can never take effect.
-2. Do not support Resource hooks now.
-3. Some modules may not be compatible with VirtualXposed now.
+If you still couldn't believe in me, you can install version [0.8.7](https://github.com/android-hacker/VirtualXposed/releases/tag/0.8.7); VirusTotal reports this version as safe.
 
 Support
 -----------
 
-Welcome to contributing for VirtualXposed!!
+Contributions to VirtualXposed are always welcomed!!
 
-For Developer
+For Developers
 --------------
 
-- [Fire a bug](https://github.com/android-hacker/exposed/issues)
+- [File a bug](https://github.com/android-hacker/exposed/issues)
 - [Wiki](https://github.com/android-hacker/VirtualXposed/wiki)
 
-Credit
+Credits
 -------
 
 1. [VirtualApp](https://github.com/asLody/VirtualApp)

@@ -70,7 +70,7 @@
     <string name="home_menu_kill_content">是否要强制停止 %1$s 的运行？</string>
     <string name="add_app_loading_tips">正在解析安装包 %1$s</string>
     <string name="add_app_installing_tips">正在安装 %1$s </string>
-    <string name="add_app_laoding_complete">%1$s 安装成功！</string>
+    <string name="add_app_loading_complete">%1$s 安装成功！</string>
     <string name="list_app_activity_install">添加到VirtualXposed</string>
     <string name="settings_about_text">关于</string>
     <string name="settings_task_manage_text">任务管理</string>
@@ -108,7 +108,7 @@
     <string name="shared_to_vxp_failed">分享失败 :( 请稍后重试…</string>
     <string name="app_installer_label">安装到VirtualXposed</string>
     <string name="install_complete">完成</string>
-    <string name="install_fail">安装失败</string>
+    <string name="install_fail">安装失败：%1$s</string>
     <string name="install">安装</string>
     <string name="install_package">添加新应用 : %s</string>
     <string name="install_package_version_tips">你选择了一个已经安装了的应用，\n\n已经安装的版本：%1$s\n即将安装的版本：%2$s，确认安装？</string>
@@ -121,7 +121,7 @@
     <string name="advance_settings_directly_back">直接返回</string>
     <string name="advance_settings_directly_back_summary">内部APP退出时，直接返回到系统桌面而不是VirtualXposed的虚拟桌面(强制停止VirtualXposed后生效）</string>
     <string name="install_self_eggs">小伙子，你这个想法很有前途 :)</string>
-    <string name="advance_settings_install_gms">安装Google服务框架</string>
+    <string name="advance_settings_install_gms">安装/移除Google服务</string>
     <string name="about_feedback_tel_title">Telegram 群组: %1$s</string>
     <string name="advance_settings_copy_file">内部文件复制</string>
     <string name="advance_settings_yield_mode_summary">开启这个开关，可能会提高VirtualXposed的稳定性，但同时会失去对插件的一些兼容性。</string>
@@ -132,4 +132,30 @@
     <string name="settings_plugin_recommend">常用模块</string>
     <string name="advance_settings_disable_resident_notification">关闭常驻通知栏</string>
     <string name="advance_settings_disable_resident_notification_summary">关闭常驻通知栏之后，VirtualXposed有可能极易被系统杀死，导致无法收到消息等问题；如果你能确保 VirtualXposed 不会被杀死，可以尝试。总之，慎重操作！（重启VirtualXposed后生效）</string>
+    <string name="settings_module_manage">模块管理</string>
+    <string name="settings_module_manage_summary">开启或者关闭Xposed模块（Xposed模块安装之后必须手动开启才能生效）</string>
+    <string name="xposed_installer_not_found">没有找到 Xposed Installer, 请先把它添加到 VirtualXposed 中！</string>
+    <string name="advance_settings_allow_fake_signature_summary">启用之后，您可以安装没有签名的APK到 VirtualXposed （通常用于破解版的APP，请注意安全。如果APP有签名校检，依然会无法使用）</string>
+    <string name="advance_settings_allow_fake_signature">允许安装没有签名的应用</string>
+    <string name="permission_tip_title">重要提示：</string>
+    <string name="permission_tips_content">%1$s 不支持动态申请权限, 您必须提前赋予它需要的所有必要权限, 请在它接下来的权限请求中全部选择允许，否则他可能无法正常运行。</string>
+    <string name="permission_tips_confirm">我知道了</string>
+    <string name="permission_denied_tips_content">%1$s 不支持动态申请权限，如果它工作不正常，请去您设备的系统权限管理中赋予 VirtualXposed 必要权限。</string>
+    <string name="list_app_access_external_storage">如果你想把SD中的APK安装到 VirtualXposed，请赋予它外部存储权限。</string>
+    <string name="install_gms_title">安装Google服务</string>
+    <string name="install_gms_content">Google 服务是通过 micorG 支持的，需要下载 2M 左右的文件，安装完之后耗电量可能会增加，确认需要安装吗？</string>
+    <string name="install_gms_fail_title">安装失败</string>
+    <string name="install_gms_fail_content">自动安装Google 服务失败，你可以参考教程手动安装。</string>
+    <string name="install_gms_fail_ok">查看教程</string>
+    <string name="uninstall_gms_title">移除Google服务</string>
+    <string name="uninstall_gms_content">确定要移除 Google 服务吗？需要的时候你可以重新安装它。</string>
+    <string name="uninstall_gms_ok">确认移除</string>
+    <string name="install_gms_success">Google 服务已经安装成功！！</string>
+    <string name="uninstall_gms_success">Google服务已经移除成功！！</string>
+    <string name="donate_choose_title">选择打赏方式</string>
+    <string name="donate_bitconins_tips">我的比特币地址已经复制到剪切板 :)</string>
+    <string name="donate_alipay">支付宝</string>
+    <string name="advance_settings_disable_xposed">关闭 Xposed</string>
+    <string name="advance_settings_disable_xposed_summary">关闭Xposed之后，所有的Xposed均不会生效。</string>
+    <string name="prepare_xposed_installer">正在准备 Xposed 环境，请等待…</string>
 </resources>
