@@ -25,8 +25,9 @@ import java.util.Map;
  * VirtualApp Native Project
  */
 public class NativeEngine {
-
     private static final String TAG = NativeEngine.class.getSimpleName();
+
+    private static final String VESCAPE = "/6decacfa7aad11e8a718985aebe4663a";
 
     private static Map<String, InstalledAppInfo> sDexOverrideMap;
 
@@ -57,13 +58,13 @@ public class NativeEngine {
         }
     }
 
-    public static String getRedirectedPath(String origPath) {
+    public static String getRedirectedPath(String redirectPath) {
         try {
-            return nativeGetRedirectedPath(origPath);
+            return nativeGetRedirectedPath(redirectPath);
         } catch (Throwable e) {
             VLog.e(TAG, VLog.getStackTraceString(e));
         }
-        return origPath;
+        return redirectPath;
     }
 
     public static String resverseRedirectedPath(String origPath) {
@@ -89,6 +90,17 @@ public class NativeEngine {
         }
     }
 
+    public static String getEscapePath(String path) {
+        if (path == null) {
+            return null;
+        }
+        File file = new File(path);
+        if (file.exists()) {
+            return file.getAbsolutePath();
+        }
+        return new File(VESCAPE, path).getAbsolutePath();
+    }
+
     public static void redirectFile(String origPath, String newPath) {
         if (origPath.endsWith("/")) {
             origPath = origPath.substring(0, origPath.length() - 1);
@@ -104,7 +116,12 @@ public class NativeEngine {
         }
     }
 
-    public static void whitelist(String path) {
+    public static void whitelist(String path, boolean directory) {
+        if (directory && !path.endsWith("/")) {
+            path = path + "/";
+        } else if (!directory && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
         try {
             nativeIOWhitelist(path);
         } catch (Throwable e) {
@@ -129,6 +146,7 @@ public class NativeEngine {
             if (!new File(soPath).exists()) {
                 throw new RuntimeException("io redirect failed.");
             }
+            redirectDirectory(VESCAPE, "/");
             nativeEnableIORedirect(soPath, Build.VERSION.SDK_INT, BuildCompat.getPreviewSDKInt());
         } catch (Throwable e) {
             VLog.e(TAG, VLog.getStackTraceString(e));

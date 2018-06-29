@@ -16,6 +16,7 @@ import android.content.res.Configuration;
 import android.os.Binder;
 import android.os.Build;
 import android.os.ConditionVariable;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.IInterface;
@@ -24,7 +25,6 @@ import android.os.Message;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.StrictMode;
-import android.util.Base64;
 
 import com.lody.virtual.client.core.CrashHandler;
 import com.lody.virtual.client.core.InvocationStubManager;
@@ -58,6 +58,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import me.weishu.exposed.ExposedBridge;
 import mirror.android.app.ActivityThread;
@@ -474,28 +475,63 @@ public final class VClientImpl extends IVClient.Stub {
     }
 
     private void setupVirtualStorage(ApplicationInfo info, int userId) {
+        VirtualStorageManager vsManager = VirtualStorageManager.get();
+        boolean enable = vsManager.isVirtualStorageEnable(info.packageName, userId);
+        if (!enable) {
+            // There are lots of situation to deal, I am tired, disable it now.
+            // such as: FileProvider.
+            return;
+        }
+
         File vsDir = VEnvironment.getVirtualStorageDir(info.packageName, userId);
         if (vsDir == null || !vsDir.exists() || !vsDir.isDirectory()) {
             return;
         }
 
-        VirtualStorageManager vsManager = VirtualStorageManager.get();
-        boolean enable = vsManager.isVirtualStorageEnable(info.packageName, userId);
-        HashSet<String> mountPoints = getMountPoints();
-        if (enable) {
-            vsManager.setVirtualStorage(info.packageName, userId, vsDir.getPath());
-            // redirect for normal path
-            for (String mountPoint : mountPoints) {
-                NativeEngine.redirectDirectory(mountPoint, vsDir.getPath());
+        HashSet<String> storageRoots = getMountPoints();
+        storageRoots.add(Environment.getExternalStorageDirectory().getAbsolutePath());
+
+        Set<String> whiteList = new HashSet<>();
+        whiteList.add(Environment.DIRECTORY_PODCASTS);
+        whiteList.add(Environment.DIRECTORY_RINGTONES);
+        whiteList.add(Environment.DIRECTORY_ALARMS);
+        whiteList.add(Environment.DIRECTORY_NOTIFICATIONS);
+        whiteList.add(Environment.DIRECTORY_PICTURES);
+        whiteList.add(Environment.DIRECTORY_MOVIES);
+        whiteList.add(Environment.DIRECTORY_DOWNLOADS);
+        whiteList.add(Environment.DIRECTORY_DCIM);
+        whiteList.add("Android/obb");
+        if (Build.VERSION.SDK_INT >= 19) {
+            whiteList.add(Environment.DIRECTORY_DOCUMENTS);
+        }
+
+        // ensure virtual storage white directory exists.
+        for (String whiteDir : whiteList) {
+            File originalDir = new File(Environment.getExternalStorageDirectory(), whiteDir);
+            File virtualDir = new File(vsDir, whiteDir);
+            if (!originalDir.exists()) {
+                continue;
             }
-        } else {
-            // redirect tencent to avoid message mess
-            final String tStr = new String(Base64.decode("dGVuY2VudA==", 0));
-            for (String mountPoint : mountPoints) {
-                File tDir = new File(mountPoint, tStr);
-                File tRelocateDir = new File(vsDir, tStr);
-                NativeEngine.redirectDirectory(tDir.getAbsolutePath(), tRelocateDir.getAbsolutePath());
+            //noinspection ResultOfMethodCallIgnored
+            virtualDir.mkdirs();
+        }
+
+        String vsPath = vsDir.getAbsolutePath();
+        NativeEngine.whitelist(vsPath, true);
+        String privatePath = VEnvironment.getVirtualPrivateStorageDir(userId).getAbsolutePath();
+        NativeEngine.whitelist(privatePath, true);
+
+        for (String storageRoot : storageRoots) {
+            for (String whiteDir : whiteList) {
+                // white list, do not redirect
+                String whitePath = new File(storageRoot, whiteDir).getAbsolutePath();
+                NativeEngine.whitelist(whitePath, true);
             }
+
+            // redirect xxx/Android/data/ -> /xxx/Android/data/<host>/virtual/<user>
+            NativeEngine.redirectDirectory(new File(storageRoot, "Android/data/").getAbsolutePath(), privatePath);
+            // redirect /sdcard/ -> vsdcard
+            NativeEngine.redirectDirectory(storageRoot, vsPath);
         }
     }
 
