@@ -25,6 +25,8 @@ import android.os.Message;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.StrictMode;
+import android.system.ErrnoException;
+import android.system.Os;
 
 import com.lody.virtual.client.core.CrashHandler;
 import com.lody.virtual.client.core.InvocationStubManager;
@@ -157,6 +159,11 @@ public final class VClientImpl extends IVClient.Stub {
 
     public ClassLoader getClassLoader(ApplicationInfo appInfo) {
         Context context = createPackageContext(appInfo.packageName);
+        return context.getClassLoader();
+    }
+
+    public ClassLoader getClassLoader(String packageName) {
+        Context context = createPackageContext(packageName);
         return context.getClassLoader();
     }
 
@@ -332,6 +339,12 @@ public final class VClientImpl extends IVClient.Stub {
             InvocationStubManager.getInstance().checkEnv(AppInstrumentation.class);
         }
 
+        ApplicationInfo applicationInfo = LoadedApk.mApplicationInfo.get(data.info);
+        if (Build.VERSION.SDK_INT >= 26 && applicationInfo.splitNames == null) {
+            applicationInfo.splitNames = new String[1];
+        }
+
+
         boolean enableXposed = !VirtualCore.get().getContext().getFileStreamPath(".disable_xposed").exists();
         if (enableXposed) {
             VLog.i(TAG, "Xposed is enabled.");
@@ -468,6 +481,15 @@ public final class VClientImpl extends IVClient.Stub {
         NativeEngine.redirectDirectory(userLibPath, libPath);
         NativeEngine.redirectDirectory("/data/data/" + info.packageName + "/lib/", libPath);
         NativeEngine.redirectDirectory("/data/user/0/" + info.packageName + "/lib/", libPath);
+
+        File dataUserLib = new File(VEnvironment.getDataUserPackageDirectory(userId, info.packageName), "lib");
+        if (!dataUserLib.exists()) {
+            try {
+                Os.symlink(libPath, dataUserLib.getPath());
+            } catch (ErrnoException e) {
+                VLog.w(TAG, "symlink error", e);
+            }
+        }
 
         setupVirtualStorage(info, userId);
 
